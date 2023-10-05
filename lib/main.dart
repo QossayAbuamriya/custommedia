@@ -1,6 +1,7 @@
 import 'package:custommedia/user/menu.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'admin/menu_edit.dart';
 import 'signup.dart';
 
 void main() async {
@@ -22,7 +23,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: SpotsList(),
+      home: AdminSpotsList(),
     );
   }
 }
