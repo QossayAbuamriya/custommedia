@@ -1,3 +1,4 @@
+import 'package:custommedia/user/menu.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -62,7 +63,7 @@ class _LoginPageState extends State<LoginPage> {
 
         // Navigate to next page or show a successful login message here
         Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => NextPage()));
+            context, MaterialPageRoute(builder: (context) => MenuPage()));
       } catch (e) {
         if (e is FirebaseAuthException) {
           setState(() {
