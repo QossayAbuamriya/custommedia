@@ -1,72 +1,98 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:custommedia/user/details.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_database/firebase_database.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-class MenuPage extends StatefulWidget {
+class SpotsList extends StatefulWidget {
   @override
-  _MenuPageState createState() => _MenuPageState();
+  _SpotsListState createState() => _SpotsListState();
 }
 
-class _MenuPageState extends State<MenuPage> {
-  List<Map<dynamic, dynamic>> items = [];
+class _SpotsListState extends State<SpotsList> {
+  final CollectionReference spots =
+      FirebaseFirestore.instance.collection('spots');
 
-  @override
-  void initState() {
-    super.initState();
-    fetchMenuItems();
-  }
+  // document IDS
+  List<String> docIDs = [];
 
-  Future<void> fetchMenuItems() async {
-    DatabaseReference ref = FirebaseDatabase.instance.ref().child('spot');
-
-    try {
-      DataSnapshot snap = (await ref.once()) as DataSnapshot;
-
-      if (snap.value is Map<dynamic, dynamic>) {
-        Map<dynamic, dynamic> rawData = snap.value as Map<dynamic, dynamic>;
-        rawData.forEach((key, value) {
-          items.add(value as Map<dynamic, dynamic>);
-        });
-        setState(() {});
-      }
-    } catch (e) {
-      print("Error fetching data: $e");
-    }
+  // get docIDS
+  Future getDocId() async {
+    await FirebaseFirestore.instance
+        .collection('spots')
+        .get()
+        .then((snapshot) => snapshot.docs.forEach(
+              (document) {
+                print(document.reference);
+                docIDs.add(document.reference.id);
+              },
+            ));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.green,
-        title: Text("Custommedia travel app"),
+        title: Text("Spots List"),
+        backgroundColor: Colors.deepPurpleAccent,
       ),
-      body: StreamBuilder(
-        stream: FirebaseFirestore.instance.collection('spot').snapshots(),
-        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          // Handle error state
-          if (snapshot.hasError) {
-            return Center(child: Text('Something went wrong'));
-          }
-
-          // Loading state
-          if (!snapshot.hasData) {
-            return Center(child: CircularProgressIndicator());
-          }
-
-          return ListView.builder(
-            itemCount: snapshot.data!.docs.length,
-            itemBuilder: (context, index) {
-              final document = snapshot.data!.docs[index];
-              // Access fields safely
-              final text = document.get('spot1') ?? 'N/A';
-              return Container(
-                child: Center(child: Text(text['name'])),
-              );
-            },
-          );
-        },
+      body: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Column(
+          children: [
+            Expanded(
+                child: FutureBuilder(
+              future: getDocId(),
+              builder: ((context, snapshot) {
+                return ListView.builder(
+                  itemCount: docIDs.length,
+                  itemBuilder: (context, index) {
+                    return InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => DetailsPage(index: docIDs[index],)),
+                        );
+                      },
+                      child: Card(
+                        elevation: 5,
+                        child: ListTile(
+                          leading: Icon(Icons.location_on, color: Colors.deepPurpleAccent),
+                          title: GetData(documentId: docIDs[index]),
+                        ),
+                      ),
+                    );
+                  },
+                );
+              }),
+            ))
+          ],
+        ),
       ),
     );
   }
 }
+
+class GetData extends StatelessWidget {
+  final String documentId;
+
+  GetData({required this.documentId});
+
+  @override
+  Widget build(BuildContext context) {
+    // get the collection
+    CollectionReference users = FirebaseFirestore.instance.collection('spots');
+
+    return FutureBuilder<DocumentSnapshot>(
+      future: users.doc(documentId).get(),
+      builder: ((context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          Map<String, dynamic> data =
+              snapshot.data!.data() as Map<String, dynamic>;
+          return Text('${data['pic']} ' + ' ' + '${data['name']}',
+              style: TextStyle(fontWeight: FontWeight.bold));
+        }
+        return Text('Loading..', style: TextStyle(color: Colors.grey));
+      }),
+    ); // FutureBuilder
+  }
+}
+

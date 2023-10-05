@@ -63,7 +63,7 @@ class _LoginPageState extends State<LoginPage> {
 
         // Navigate to next page or show a successful login message here
         Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => MenuPage()));
+            context, MaterialPageRoute(builder: (context) => SpotsList()));
       } catch (e) {
         if (e is FirebaseAuthException) {
           setState(() {
