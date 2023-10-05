@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:custommedia/user/details.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -8,8 +11,7 @@ class SpotsList extends StatefulWidget {
 }
 
 class _SpotsListState extends State<SpotsList> {
-  final CollectionReference spots =
-      FirebaseFirestore.instance.collection('spots');
+
 
   // document IDS
   List<String> docIDs = [];
@@ -32,7 +34,7 @@ class _SpotsListState extends State<SpotsList> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Spots List"),
-        backgroundColor: Colors.deepPurpleAccent,
+        backgroundColor: Color.fromARGB(143, 2, 141, 187),
       ),
       body: Padding(
         padding: const EdgeInsets.all(10.0),
@@ -55,7 +57,6 @@ class _SpotsListState extends State<SpotsList> {
                       child: Card(
                         elevation: 5,
                         child: ListTile(
-                          leading: Icon(Icons.location_on, color: Colors.deepPurpleAccent),
                           title: GetData(documentId: docIDs[index]),
                         ),
                       ),
@@ -79,16 +80,38 @@ class GetData extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // get the collection
-    CollectionReference users = FirebaseFirestore.instance.collection('spots');
+    CollectionReference cities = FirebaseFirestore.instance.collection('spots');
 
     return FutureBuilder<DocumentSnapshot>(
-      future: users.doc(documentId).get(),
+      future: cities.doc(documentId).get(),
       builder: ((context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
-          Map<String, dynamic> data =
-              snapshot.data!.data() as Map<String, dynamic>;
-          return Text('${data['pic']} ' + ' ' + '${data['name']}',
-              style: TextStyle(fontWeight: FontWeight.bold));
+          Map<String, dynamic> data = snapshot.data!.data() as Map<String, dynamic>;
+
+          // Default to a 'Loading...' image if 'pic' doesn't exist or can't be parsed
+          Widget imageWidget = Text('Loading...', style: TextStyle(color: Colors.grey));
+
+          // If 'pic' exists, try to decode and display it
+          if (data.containsKey('pic1') && data['pic1'].contains(",")) {
+            String base64Image = data['pic1'].split(",")[1];
+            Uint8List bytes;
+            try {
+              bytes = base64Decode(base64Image);
+              imageWidget = Image.memory(bytes, fit: BoxFit.cover);  // Displaying the Image
+            } catch (e) {
+              print("Failed to decode image data: $e");
+            }
+          }
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              imageWidget,  // Image
+              SizedBox(height: 8),  // Space between image and text
+              Text('${data['name']}', style: TextStyle(fontWeight: FontWeight.bold))  // Name
+            ],
+          );
+
         }
         return Text('Loading..', style: TextStyle(color: Colors.grey));
       }),
