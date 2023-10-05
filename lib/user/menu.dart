@@ -11,9 +11,7 @@ class SpotsList extends StatefulWidget {
 }
 
 class _SpotsListState extends State<SpotsList> {
-
-
-  // document IDS
+   // document IDS
   List<String> docIDs = [];
 
   // get docIDS
@@ -37,34 +35,49 @@ class _SpotsListState extends State<SpotsList> {
         backgroundColor: Color.fromARGB(143, 2, 141, 187),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(10.0),
+        padding: const EdgeInsets.all(15.0),  // More space from the edges
         child: Column(
           children: [
             Expanded(
-                child: FutureBuilder(
-              future: getDocId(),
-              builder: ((context, snapshot) {
-                return ListView.builder(
-                  itemCount: docIDs.length,
-                  itemBuilder: (context, index) {
-                    return InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => DetailsPage(index: docIDs[index],)),
-                        );
-                      },
-                      child: Card(
-                        elevation: 5,
-                        child: ListTile(
-                          title: GetData(documentId: docIDs[index]),
+              child: FutureBuilder(
+                future: getDocId(),
+                builder: (context, snapshot) {
+                  return ListView.builder(
+                    itemCount: docIDs.length,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 15.0),  // Increase space between tiles
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => DetailsPage(
+                                  index: docIDs[index],
+                                ),
+                              ),
+                            );
+                          },
+                          child: Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            elevation: 5,
+                            child: Container(
+                              height: 300,  // Adjust as per your requirements
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: GetData(documentId: docIDs[index]),
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                    );
-                  },
-                );
-              }),
-            ))
+                      );
+                    },
+                  );
+                },
+              ),
+            )
           ],
         ),
       ),
@@ -79,25 +92,37 @@ class GetData extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // get the collection
     CollectionReference cities = FirebaseFirestore.instance.collection('spots');
 
     return FutureBuilder<DocumentSnapshot>(
       future: cities.doc(documentId).get(),
-      builder: ((context, snapshot) {
+      builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
-          Map<String, dynamic> data = snapshot.data!.data() as Map<String, dynamic>;
+          Map<String, dynamic> data =
+              snapshot.data!.data() as Map<String, dynamic>;
 
-          // Default to a 'Loading...' image if 'pic' doesn't exist or can't be parsed
-          Widget imageWidget = Text('Loading...', style: TextStyle(color: Colors.grey));
+          Widget imageWidget = Center(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(15),
+              child: Placeholder(
+                fallbackHeight: 200,  // Adjust as per your requirements
+                fallbackWidth: double.infinity,
+                color: Colors.grey,
+              ),
+            ),
+          );
 
-          // If 'pic' exists, try to decode and display it
           if (data.containsKey('pic1') && data['pic1'].contains(",")) {
             String base64Image = data['pic1'].split(",")[1];
             Uint8List bytes;
             try {
               bytes = base64Decode(base64Image);
-              imageWidget = Image.memory(bytes, fit: BoxFit.cover);  // Displaying the Image
+              imageWidget = Center(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(15),
+                  child: Image.memory(bytes, fit: BoxFit.cover, width: double.infinity, height: 200),  // Adjust as per your requirements
+                ),
+              );
             } catch (e) {
               print("Failed to decode image data: $e");
             }
@@ -106,16 +131,25 @@ class GetData extends StatelessWidget {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              imageWidget,  // Image
-              SizedBox(height: 8),  // Space between image and text
-              Text('${data['name']}', style: TextStyle(fontWeight: FontWeight.bold))  // Name
+              imageWidget,
+              SizedBox(height: 8),
+              Text(
+                '${data['name']}',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              Text(
+                '${data['date']}',
+                style: TextStyle(color: Colors.grey),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ],
           );
-
         }
         return Text('Loading..', style: TextStyle(color: Colors.grey));
-      }),
-    ); // FutureBuilder
+      },
+    );
   }
 }
-
