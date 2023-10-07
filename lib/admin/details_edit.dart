@@ -83,8 +83,6 @@ class _DetailsPageState extends State<DetailsEdit> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // Your image and other UI remains here ...
-
                     SizedBox(height: 20),
                     TextField(
                       controller: nameController,
@@ -106,7 +104,6 @@ class _DetailsPageState extends State<DetailsEdit> {
                         labelText: "Date",
                       ),
                     ),
-                    // ... Continue with your remaining UI
                   ],
                 ),
               ),

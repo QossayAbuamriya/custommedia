@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:custommedia/checkout.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -123,7 +124,12 @@ class DetailsPage extends StatelessWidget {
                         ),
                         ElevatedButton(
                           onPressed: () {
-                            // Booking action here
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => CheckoutPage(spotid: index),
+                              ),
+                            );
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color.fromARGB(234, 184, 209, 235),
