@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:custommedia/admin/bookings.dart';
 import 'package:custommedia/admin/details_edit.dart';
+import 'package:custommedia/admin/review_requests.dart';
 import 'package:custommedia/user/details.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -13,29 +15,27 @@ class AdminSpotsList extends StatefulWidget {
 
 class _SpotsListState extends State<AdminSpotsList> {
   List<String> docIDs = [];
-
-  
+    int currentIndex = 0; // To keep track of the active page
+  List<Widget> pages = [
+    AdminSpotsList(), // Assuming you want the same list page as the first page
+    AdminReviewPage(), // Assuming you have a separate widget for this
+    ApprovedRequestsPage(), // Assuming you have a separate widget for this
+  ];
 
   Future getDocId() async {
     await FirebaseFirestore.instance
         .collection('spots')
         .get()
         .then((snapshot) => snapshot.docs.forEach(
-          (document) {
-            print(document.reference);
-            docIDs.add(document.reference.id);
-          },
-        ));
+              (document) {
+                print(document.reference);
+                docIDs.add(document.reference.id);
+              },
+            ));
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Spots List"),
-        backgroundColor: Color.fromARGB(143, 2, 141, 187),
-      ),
-      body: Padding(
+Widget _renderAdminSpotsList() {
+  return Padding(
         padding: const EdgeInsets.all(15.0),
         child: Column(
           children: [
@@ -81,6 +81,42 @@ class _SpotsListState extends State<AdminSpotsList> {
             )
           ],
         ),
+      );
+}
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Spots List"),
+        backgroundColor: Color.fromARGB(143, 2, 141, 187),
+      ),
+      body: currentIndex == 0
+          ? _renderAdminSpotsList()
+          : currentIndex == 1
+              ? AdminReviewPage() // Assuming you have a separate widget for this
+              : ApprovedRequestsPage(),    // Assuming you have a separate widget for this
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: currentIndex,
+        onTap: (index) {
+          setState(() {
+            currentIndex = index;
+          });
+        },
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.menu),
+            label: 'Menu Edit',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.preview),
+            label: 'Review Requests',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.book),
+            label: 'Bookings',
+          ),
+        ],
       ),
     );
   }
@@ -103,7 +139,8 @@ class GetData extends StatelessWidget {
       future: cities.doc(documentId).get(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
-          Map<String, dynamic> data = snapshot.data!.data() as Map<String, dynamic>;
+          Map<String, dynamic> data =
+              snapshot.data!.data() as Map<String, dynamic>;
           Widget imageWidget = Center(
             child: ClipRRect(
               borderRadius: BorderRadius.circular(15),
@@ -123,7 +160,8 @@ class GetData extends StatelessWidget {
               imageWidget = Center(
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(15),
-                  child: Image.memory(bytes, fit: BoxFit.cover, width: double.infinity, height: 200),
+                  child: Image.memory(bytes,
+                      fit: BoxFit.cover, width: double.infinity, height: 200),
                 ),
               );
             } catch (e) {
@@ -154,25 +192,25 @@ class GetData extends StatelessWidget {
                   ElevatedButton(
                     onPressed: () {
                       Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => DetailsEdit(
-                                  index: documentId,
-                                ),
-                              ),
-                            );
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DetailsEdit(
+                            index: documentId,
+                          ),
+                        ),
+                      );
                     },
                     child: Text("Edit"),
                   ),
                   ElevatedButton(
                     onPressed: () async {
                       await _deleteData(documentId);
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Deleted Successfully')));
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Deleted Successfully')));
                     },
                     child: Text("Delete"),
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all(Colors.red),
-                      
                     ),
                   ),
                 ],

@@ -3,10 +3,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_paypal_checkout/flutter_paypal_checkout.dart';
 
+
 class CheckoutPage extends StatefulWidget {
   final String spotid;
+  final String spotName;
 
-  CheckoutPage({required this.spotid});
+  CheckoutPage({required this.spotid,required this.spotName});
 
   @override
   State<CheckoutPage> createState() => _CheckoutPageState();
@@ -16,11 +18,13 @@ class _CheckoutPageState extends State<CheckoutPage> {
   final requestsRef = FirebaseFirestore.instance.collection('requests');
   final currentUserId = FirebaseAuth.instance.currentUser!.email;
 
-  void submitRequest(String spotId) async {
+  void submitRequest(String spotId, String spotName, String amount) async {
     await requestsRef.add({
       'userId': currentUserId,
       'spotId': spotId,
       'status': 'pending',
+      'amount paid' : amount,
+      'spotName' : spotName,
       'timestamp': DateTime.now()
     });
   }
@@ -44,36 +48,32 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     "AchHlFa0trVGY9e3mgqAy4vr7cxySJfD_gsaJCquH3eS_XaEbpKDtr5hIeUhTdcSPTWhofJT0tWDbhvL",
                 secretKey:
                     "EP69lh4ycG6gzEmW0L-oy_tJ1aU46Vy2mlSbhsXw8I0W4YjANG6BEWgzwPdcsY6IHaYNVHLb0vqEBLvQ",
-                returnURL: "success.custommedia.com",
+                returnURL: "https://fuchsia-brinn-4.tiiny.site/",
                 cancelURL: "cancel.custommedia.com",
                 transactions: const [
                   {
                     "amount": {
-                      "total": '70',
+                      "total": '1700',
                       "currency": "USD",
                       "details": {
-                        "subtotal": '70',
+                        "subtotal": '1700',
                         "shipping": '0',
                         "shipping_discount": 0
                       }
                     },
-                    "description": "The payment transaction description.",
-                    // "payment_options": {
-                    //   "allowed_payment_method":
-                    //       "INSTANT_FUNDING_SOURCE"
-                    // },
+                    "description": "payment for the travel package. please take a screenshot",
                     "item_list": {
                       "items": [
                         {
-                          "name": "Apple",
-                          "quantity": 4,
-                          "price": '5',
+                          "name": "travel package",
+                          "quantity": 1,
+                          "price": '1500',
                           "currency": "USD"
                         },
                         {
-                          "name": "Pineapple",
-                          "quantity": 5,
-                          "price": '10',
+                          "name": "insurance",
+                          "quantity": 1,
+                          "price": '200',
                           "currency": "USD"
                         }
                       ],
@@ -85,7 +85,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   print("onSuccess: $params");
                   try {
                     submitRequest(widget
-                        .spotid); // Using widget.spotid to reference the spotId from the previous page
+                        .spotid, widget.spotName, params['data']['transactions'][0]['amount']['total'] ); // Using widget.spotid to reference the spotId from the previous page
                     print('Request successfully added to Firestore');
                   } catch (error) {
                     print('Error inserting into Firestore: $error');
