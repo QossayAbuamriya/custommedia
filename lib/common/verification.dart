@@ -1,4 +1,4 @@
-import 'package:custommedia/login.dart';
+import 'package:custommedia/common/login.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -52,7 +52,11 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
           
           children: [
             Image.asset('assets/logo.png', height: 200,), // Logo
-            SizedBox(height: 20.0),
+            Text("TRAVEL APP",
+                    style: TextStyle(
+                      color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold
+                    )),
+                SizedBox(height: 10.0),
             Text('Please verify your email to continue.'),
             SizedBox(height: 20.0),
             ElevatedButton(

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:custommedia/common/reciept.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_paypal_checkout/flutter_paypal_checkout.dart';
@@ -84,6 +85,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 onSuccess: (Map params) async {
                   print("onSuccess: $params");
                   try {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => ReceiptApp()));
                     submitRequest(widget
                         .spotid, widget.spotName, params['data']['transactions'][0]['amount']['total'] ); // Using widget.spotid to reference the spotId from the previous page
                     print('Request successfully added to Firestore');

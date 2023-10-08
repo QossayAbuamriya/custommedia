@@ -1,9 +1,9 @@
+import 'package:custommedia/common/signup.dart';
 import 'package:custommedia/user/details.dart';
 import 'package:custommedia/user/menu.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'admin/menu_edit.dart';
-import 'signup.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

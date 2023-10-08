@@ -58,6 +58,10 @@ class _LoginPageState extends State<LoginPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Image.asset('assets/logo.png', height: 200), // Logo
+                Text("TRAVEL APP",
+                    style: TextStyle(
+                      color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold
+                    )),
                 SizedBox(height: 10.0),
                 TextFormField(
                   validator: (input) {

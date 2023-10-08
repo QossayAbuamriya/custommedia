@@ -1,11 +1,12 @@
-import 'package:custommedia/verification.dart';
+import 'package:custommedia/common/verification.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'login.dart';
 
 // Define the theme colors
-const Color primaryColor = Color.fromARGB(213, 116, 203, 224); // 1. Set to light blue
+const Color primaryColor =
+    Color.fromARGB(213, 116, 203, 224); // 1. Set to light blue
 const Color secondaryColor = Colors.white;
 const Color tertiaryColor = Colors.grey;
 
@@ -61,7 +62,12 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   'assets/logo.png',
                   height: 200,
                 ), // 3. Added logo
+                Text("TRAVEL APP",
+                    style: TextStyle(
+                      color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold
+                    )),
                 SizedBox(height: 10.0),
+
                 TextFormField(
                   validator: (input) {
                     if (input!.isEmpty) return 'Please type an email';
