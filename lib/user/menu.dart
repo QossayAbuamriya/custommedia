@@ -16,6 +16,7 @@ class _SpotsListState extends State<SpotsList> {
 
   // get docIDS
   Future getDocId() async {
+    docIDs = [];
     await FirebaseFirestore.instance
         .collection('spots')
         .get()
@@ -32,7 +33,7 @@ class _SpotsListState extends State<SpotsList> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Spots List"),
-        backgroundColor: Color.fromARGB(143, 2, 141, 187),
+        backgroundColor: Colors.lightBlue,
       ),
       body: Padding(
         padding: const EdgeInsets.all(15.0),  // More space from the edges
@@ -59,6 +60,7 @@ class _SpotsListState extends State<SpotsList> {
                             );
                           },
                           child: Card(
+                            surfaceTintColor: Color.fromRGBO(58, 145, 203, 0.98), 
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(15),
                             ),
@@ -107,7 +109,7 @@ class GetData extends StatelessWidget {
               child: Placeholder(
                 fallbackHeight: 200,  // Adjust as per your requirements
                 fallbackWidth: double.infinity,
-                color: Colors.grey,
+                color: Color.fromARGB(255, 7, 143, 216),
               ),
             ),
           );

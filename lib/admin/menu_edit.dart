@@ -8,6 +8,10 @@ import 'package:custommedia/user/details.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+const Color primaryColor = Color.fromARGB(213, 116, 203, 224);
+const Color secondaryColor = Colors.white;
+const Color tertiaryColor = Colors.grey;
+
 class AdminSpotsList extends StatefulWidget {
   @override
   _SpotsListState createState() => _SpotsListState();
@@ -15,7 +19,7 @@ class AdminSpotsList extends StatefulWidget {
 
 class _SpotsListState extends State<AdminSpotsList> {
   List<String> docIDs = [];
-    int currentIndex = 0; // To keep track of the active page
+  int currentIndex = 0; // To keep track of the active page
   List<Widget> pages = [
     AdminSpotsList(), // Assuming you want the same list page as the first page
     AdminReviewPage(), // Assuming you have a separate widget for this
@@ -23,6 +27,7 @@ class _SpotsListState extends State<AdminSpotsList> {
   ];
 
   Future getDocId() async {
+    docIDs = [];
     await FirebaseFirestore.instance
         .collection('spots')
         .get()
@@ -34,68 +39,71 @@ class _SpotsListState extends State<AdminSpotsList> {
             ));
   }
 
-Widget _renderAdminSpotsList() {
-  return Padding(
-        padding: const EdgeInsets.all(15.0),
-        child: Column(
-          children: [
-            Expanded(
-              child: FutureBuilder(
-                future: getDocId(),
-                builder: (context, snapshot) {
-                  return ListView.builder(
-                    itemCount: docIDs.length,
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 15.0),
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => DetailsPage(
-                                  index: docIDs[index],
-                                ),
+  Widget _renderAdminSpotsList() {
+    return Column(
+      children: [
+        AppBar(
+          title: Text("Spots List"),
+          backgroundColor: primaryColor,
+        ),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+                horizontal:
+                    15.0), // This adds padding on the left and right sides
+            child: FutureBuilder(
+              future: getDocId(),
+              builder: (context, snapshot) {
+                return ListView.builder(
+                  itemCount: docIDs.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 15.0),
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => DetailsPage(
+                                index: docIDs[index],
                               ),
-                            );
-                          },
-                          child: Card(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15),
                             ),
-                            elevation: 5,
-                            child: Container(
-                              height: 320,
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: GetData(documentId: docIDs[index]),
-                              ),
+                          );
+                        },
+                        child: Card(
+                          surfaceTintColor: Color.fromRGBO(58, 145, 203, 0.98),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          elevation: 5,
+                          child: Container(
+                            height: 320,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: GetData(documentId: docIDs[index]),
                             ),
                           ),
                         ),
-                      );
-                    },
-                  );
-                },
-              ),
-            )
-          ],
-        ),
-      );
-}
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+        )
+      ],
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Spots List"),
-        backgroundColor: Color.fromARGB(143, 2, 141, 187),
-      ),
       body: currentIndex == 0
           ? _renderAdminSpotsList()
           : currentIndex == 1
               ? AdminReviewPage() // Assuming you have a separate widget for this
-              : ApprovedRequestsPage(),    // Assuming you have a separate widget for this
+              : ApprovedRequestsPage(), // Assuming you have a separate widget for this
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: currentIndex,
         onTap: (index) {
@@ -117,6 +125,9 @@ Widget _renderAdminSpotsList() {
             label: 'Bookings',
           ),
         ],
+        backgroundColor: Color.fromARGB(213, 116, 203, 224), // Consistent color
+        selectedItemColor: Colors.black,
+        unselectedItemColor: tertiaryColor,
       ),
     );
   }
@@ -200,7 +211,15 @@ class GetData extends StatelessWidget {
                         ),
                       );
                     },
-                    child: Text("Edit"),
+                    child:
+                        Text("Edit", style: TextStyle(color: Colors.black)),
+                    style: ElevatedButton.styleFrom(
+                      surfaceTintColor: Color.fromARGB(213, 116, 203, 224),
+                      backgroundColor: Color.fromARGB(213, 116, 203, 224),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(32.0),
+                      ),
+                    ),
                   ),
                   ElevatedButton(
                     onPressed: () async {
@@ -208,9 +227,14 @@ class GetData extends StatelessWidget {
                       ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('Deleted Successfully')));
                     },
-                    child: Text("Delete"),
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all(Colors.red),
+                    child:
+                        Text("Delete", style: TextStyle(color: Colors.black)),
+                    style: ElevatedButton.styleFrom(
+                      primary: const Color.fromARGB(255, 227, 100, 91),
+                      onPrimary: secondaryColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(32.0),
+                      ),
                     ),
                   ),
                 ],

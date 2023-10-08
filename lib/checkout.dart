@@ -48,7 +48,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     "AchHlFa0trVGY9e3mgqAy4vr7cxySJfD_gsaJCquH3eS_XaEbpKDtr5hIeUhTdcSPTWhofJT0tWDbhvL",
                 secretKey:
                     "EP69lh4ycG6gzEmW0L-oy_tJ1aU46Vy2mlSbhsXw8I0W4YjANG6BEWgzwPdcsY6IHaYNVHLb0vqEBLvQ",
-                returnURL: "https://fuchsia-brinn-4.tiiny.site/",
+                returnURL: "success.custommedia.com",
                 cancelURL: "cancel.custommedia.com",
                 transactions: const [
                   {

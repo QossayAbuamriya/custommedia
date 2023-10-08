@@ -18,8 +18,8 @@ class _AdminReviewPageState extends State<AdminReviewPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Admin Review Page"),
-      ),
+          title: Text("Admin Review Page"),
+          backgroundColor: Color.fromARGB(213, 116, 203, 224)),
       body: StreamBuilder<QuerySnapshot>(
         stream: requestsRef.where('status', isEqualTo: 'pending').snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -40,7 +40,8 @@ class _AdminReviewPageState extends State<AdminReviewPage> {
                 leading: CircleAvatar(
                   // Add an avatar or image here, for example:
                   // backgroundImage: NetworkImage(request['imageUrl']),
-                  child: Icon(Icons.calendar_month_outlined), // Or some other placeholder content
+                  child: Icon(Icons
+                      .calendar_month_outlined, color: Color.fromARGB(213, 116, 203, 224)), // Or some other placeholder content
                 ),
                 title: Text("Spot Name: ${request['spotName']}"),
                 subtitle: Column(
@@ -53,7 +54,14 @@ class _AdminReviewPageState extends State<AdminReviewPage> {
                 isThreeLine: true, // to allow for three lines of text
                 trailing: ElevatedButton(
                   onPressed: () => approveRequest(request),
-                  child: Text("Approve"),
+                  child: Text("Approve", style: TextStyle(color: Colors.black)),
+                  style: ElevatedButton.styleFrom(
+                    surfaceTintColor: Color.fromARGB(213, 116, 203, 224),
+                    backgroundColor: Color.fromARGB(213, 116, 203, 224),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(32.0),
+                    ),
+                  ),
                 ),
               );
             },

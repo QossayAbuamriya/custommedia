@@ -6,11 +6,16 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class DetailsPage extends StatelessWidget {
+class DetailsPage extends StatefulWidget {
   final String index;
 
   DetailsPage({required this.index});
 
+  @override
+  _DetailsPageState createState() => _DetailsPageState();
+}
+
+class _DetailsPageState extends State<DetailsPage> {
   final CollectionReference spots =
       FirebaseFirestore.instance.collection('spots');
   final CollectionReference requests =
@@ -18,9 +23,20 @@ class DetailsPage extends StatelessWidget {
   final currentUserId = FirebaseAuth.instance.currentUser!.email;
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      setState(() {});
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    const Color primaryColor = Color.fromARGB(213, 116, 203, 224);
+    const Color secondaryColor = Colors.white;
+    const Color tertiaryColor = Colors.grey;
     return FutureBuilder<DocumentSnapshot>(
-      future: spots.doc(index).get(),
+      future: spots.doc(widget.index).get(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           if (snapshot.hasError) {
@@ -41,7 +57,7 @@ class DetailsPage extends StatelessWidget {
           return FutureBuilder<QuerySnapshot>(
             future: requests
                 .where('userId', isEqualTo: currentUserId)
-                .where('spotId', isEqualTo: index)
+                .where('spotId', isEqualTo: widget.index)
                 .get(),
             builder: (context, bookingSnapshot) {
               String buttonText = "Book";
@@ -61,15 +77,15 @@ class DetailsPage extends StatelessWidget {
 
               return Scaffold(
                 appBar: AppBar(
-                  leading: const CircleAvatar(
-                    radius: 1, // Reducing the size of the circle
-                    backgroundColor: Color.fromARGB(143, 2, 141, 187),
-                    child:
-                        Icon(Icons.arrow_back, color: Colors.white, size: 20),
-                  ),
+                  leading: GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: Icon(Icons.arrow_back,
+                          color: Colors.white, size: 20)),
                   title: Text('Details'),
                   centerTitle: true,
-                  backgroundColor: Colors.white,
+                  backgroundColor: primaryColor, // Consistent color
                   elevation: 0,
                 ),
                 body: SingleChildScrollView(
@@ -148,14 +164,14 @@ class DetailsPage extends StatelessWidget {
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) => CheckoutPage(
-                                              spotid: index,
+                                              spotid: widget.index,
                                               spotName: data['name']),
                                         ),
                                       );
                                     },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor:
-                                    Color.fromARGB(234, 184, 209, 235),
+                                    primaryColor, // Consistent color
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(15),
                                 ),
@@ -164,7 +180,7 @@ class DetailsPage extends StatelessWidget {
                                 buttonText,
                                 style: TextStyle(
                                   fontSize: 16,
-                                  color: Color.fromARGB(143, 2, 141, 187),
+                                  color: secondaryColor, // Consistent color
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
